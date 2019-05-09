@@ -1,11 +1,8 @@
 const Discord = require('discord.js');
 const client = new Discord.Client();
 
-//const token = "NTAzNDUzMzgzNDE2NjEwODI2.Dtwqag.wPXMXxbga4BF43hdOgk6pQw51Aw";
-
-const token = "NTc0NzIzODgyMzg1NDA4MDA5.XM9jYQ.wI7PNJOSHdEggaXaJIAAwV0Mj_g";
-
-client.login(token);
+const config = require('./config.json');
+client.login(config.token);
 
 const ytdl = require('ytdl-core');
 const streamOptions = { seek: 0, volume: 1 };
@@ -15,8 +12,6 @@ const musicUrls = [];
 client.on('ready', () => {
     console.log("Music Bot is ready!");
 });
-
-// https://youtu.be/MkNeIUgNPQ8
 
 client.on('message', async message => {
 
