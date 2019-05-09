@@ -22,7 +22,12 @@ client.on('message', async message => {
     {
         let args = message.content.split(" ");
         let url = args[1];
-        let VoiceChannel = message.guild.channels.find(channel => channel.id === '516228667685470218');
+        let VoiceChannel = message.guild.channels.find(channel => channel.id === '574726612592099329');
+
+        if(ytdl.validateURL(url))
+        {
+            console.log("Valid URL!");
+        }
         if(VoiceChannel != null)
         {
             console.log(VoiceChannel.name + " was found and is a " + VoiceChannel.type + " channel.");
@@ -48,35 +53,49 @@ client.on('message', async message => {
 
         var flag = musicUrls.some(element => element === url);
 
-        if(!flag)
+        console.log(musicUrls);
+        const info = await ytdl.getBasicInfo(url);
+        const songName = info.player_response.videoDetails.title;
+        if(ytdl.validateURL(url))
         {
-            musicUrls.push(url);
-            console.log(musicUrls);
-        }
-        
-        if(VoiceChannel != null)
-        {
-           
-            if(VoiceChannel.connection) // If this is null, the bot is not in the channel.
+            if(!flag)
             {
-                // If this is true, then there is an existing connection..
-                console.log("Existing connection...");
+                musicUrls.push(url);
+                if(VoiceChannel != null) // Check if the VoiceChannel is not null.
+                {
+                    if(VoiceChannel.connection) // If this is null, the bot is not in the channel.
+                    {
+                        // If this is true, then there is an existing connection..
+                        console.log("Existing connection...");
+                        const embed = new Discord.RichEmbed();
+                        embed.setAuthor(client.user.username, client.user.displayAvatarURL);
+                        embed.setDescription("You've successfully added **" + songName + "** to the queue!");
+                        message.channel.send(embed);
+                    }
+                    else {
+                        try {
+                            const voiceConnection = await VoiceChannel.join();
+                            await playSong(voiceConnection, VoiceChannel);
+                        }
+                        catch(ex)
+                        {
+                            console.log(ex);
+                        }
+                    }
+                }
             }
             else {
-                try {
-                    const voiceConnection = await VoiceChannel.join();
-                    await playSong(voiceConnection, VoiceChannel);
-                }
-                catch(ex)
-                {
-                    console.log(ex);
-                }
+                console.log("Song already exists in queue...");
             }
         }
         else {
-
+            const embed = new Discord.RichEmbed();
+            embed.setAuthor(client.user.username, client.user.displayAvatarURL);
+            embed.setDescription("Invalid URL Stream!");
+            message.channel.send(embed);
         }
     }
+    
     
 });
 
